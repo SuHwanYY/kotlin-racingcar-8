@@ -1,24 +1,33 @@
 package racingcar
 
-import camp.nextstep.edu.missionutils.Console
-
 fun main() {
-    val inputValidator = InputValidator()
+    // 차 이름, 시도 횟수 입력
+    val inputName = InputView.inputCarNames()
+    val inputTryCount = InputView.inputTryCount()
 
-    // 자동차 이름 입력 및 map에 저장
-    println("경주할 자동차 이름을 입력하세요.(이름은 쉼표(,) 기준으로 구분)")
-    val rawCarnames = Console.readLine() ?: throw IllegalArgumentException("자동차 이름 입력값이 비어 있습니다.")
-    val carNames = rawCarnames.split(",").map { it.trim() }
-    inputValidator.validateCarName(carNames)
+    // 입력 받은 정보가 올바른지 검증
+    val carNames = InputValidator.validateCarNames(inputName)
+    val tryNumber = InputValidator.validateTryCount(inputTryCount)
 
-    // 시도 횟수 입력 및 검증
-    println("시도할 횟수는 몇 회인가요?")
-    val rawTryCount = Console.readLine() ?: throw IllegalArgumentException("시도 횟수 입력값이 비어 있습니다.")
-    val tryCount = inputValidator.validateTryCount(rawTryCount)
+    // 자동차이름과 이동상태를 매핑
+    val cars = carNames.map { Car(it) }
 
-    // 입력 값이 잘 출력되는지 임시 확인
-    println(carNames)
-    println(tryCount)
+    // 자동차 객체 리스트 생성
+    val game = RacingGame(cars, MoveRule())
+
+    println("\n실행 결과")
+    //입력 횟수만큼 게임 반복 실행
+    repeat(tryNumber) {
+        game.play()
+        OutputResult.printCars(cars)
+        println()
+    }
+
+    // 최종 우승자 출력
+    val winners = game.resultWinner()
+    OutputResult.printWinners(winners)
+
+
 }
 
 
